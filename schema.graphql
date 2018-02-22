@@ -1,0 +1,60 @@
+type PostPreview {
+  id: Int!,
+  content: String!,
+  firstname: String!
+  lastname: String!
+  likes: String!
+  created_at: String!,
+  image_url: String!
+  user_id: String!
+}
+
+type FullPost {
+  id: Int!,
+  content: String!,
+  user_id: Int!,
+  created_at: String!,
+  image_url: String!,
+  likes: String!,
+  user: User
+}
+
+type User {
+  id: Int!,
+  firstname: String!
+  lastname: String!
+  email: String!
+  created_at: String!
+  feed: [PostPreview]
+}
+
+type AuthenticatedUser {
+  user: User,
+  token: String!
+}
+
+type Like {
+  user_id: Int!,
+  post_id: Int!
+}
+
+type Follow {
+  follower: Int!,
+  followee: Int!
+}
+
+type Query {
+  user(id: Int!): User
+  post(id: Int!): FullPost
+}
+
+type Mutation {
+  newUser(firstname: String!, lastname: String!, email: String!, password: String!): AuthenticatedUser,
+  newLike(user_id: Int!, post_id: Int!): Like,
+  newFollow(follower: Int!, followee: Int!): Follow
+  newPost(post_id: Int!): FullPost 
+}
+
+type Subscription {
+  newPost(feed_id: Int!): PostPreview
+}

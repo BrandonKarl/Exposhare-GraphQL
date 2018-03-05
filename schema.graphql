@@ -1,18 +1,6 @@
-type PostPreview {
+type Post {
   id: Int!,
   content: String!,
-  firstname: String!
-  lastname: String!
-  likes: String!
-  created_at: String!,
-  image_url: String!
-  user_id: String!
-}
-
-type FullPost {
-  id: Int!,
-  content: String!,
-  user_id: Int!,
   created_at: String!,
   image_url: String!,
   likes: String!,
@@ -25,7 +13,7 @@ type User {
   lastname: String!
   email: String!
   created_at: String!
-  feed: [PostPreview]
+  feed: [Post]
 }
 
 type AuthenticatedUser {
@@ -45,16 +33,16 @@ type Follow {
 
 type Query {
   user(id: Int!): User
-  post(id: Int!): FullPost
+  post(id: Int!): Post
 }
 
 type Mutation {
   newUser(firstname: String!, lastname: String!, email: String!, password: String!): AuthenticatedUser,
   newLike(user_id: Int!, post_id: Int!): Like,
   newFollow(follower: Int!, followee: Int!): Follow
-  newPost(post_id: Int!): FullPost 
+  newPost(post_id: Int!): Post 
 }
 
 type Subscription {
-  newPost(feed_id: Int!): PostPreview
+  newPost(feed_id: Int!): Post
 }

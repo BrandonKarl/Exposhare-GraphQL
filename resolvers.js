@@ -35,16 +35,7 @@ export default {
 
       socket.publish('NEW_POST', 
       {
-        newPost: {
-          id: post.data.id,
-          content: post.data.content,
-          firstname: post.data.user.firstname,
-          lastname: post.data.user.lastname,
-          user_id: post.data.user_id,
-          likes: "0",
-          created_at: post.data.created_at,
-          image_url: post.data.image_url
-        }
+        newPost: post.data
       })
       
       return post.data

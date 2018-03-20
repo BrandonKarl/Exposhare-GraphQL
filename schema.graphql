@@ -9,10 +9,13 @@ type Post {
 
 type User {
   id: Int!,
-  firstname: String!
-  lastname: String!
-  email: String!
-  created_at: String!
+  firstname: String!,
+  lastname: String!,
+  email: String!,
+  created_at: String!,
+  profile_picture: String,
+  bio: String!,
+  username: String!
   feed: [Post]
 }
 
@@ -37,10 +40,11 @@ type Query {
 }
 
 type Mutation {
-  newUser(firstname: String!, lastname: String!, email: String!, password: String!): AuthenticatedUser,
+  newUser(firstname: String!, lastname: String!, email: String!, password: String!, bio: String!, username: String!): AuthenticatedUser,
   newLike(user_id: Int!, post_id: Int!): Like,
-  newFollow(follower: Int!, followee: Int!): Follow
-  newPost(post_id: Int!): Post 
+  newFollow(follower: Int!, followee: Int!): Follow,
+  newPost(post_id: Int!): Post,
+  loginUser(email: String!, password: String!): AuthenticatedUser
 }
 
 type Subscription {

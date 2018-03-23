@@ -19,6 +19,46 @@ export default {
         throw new GraphQLError(e.response.data.error)
       }
     },
+    userFeed: async (parent, { id }) => {
+      try {
+        const feed = await axios.get(`${ENDPOINT}/api/users/${id}/feed`)
+        return feed.data
+      } catch(e) {
+        throw new GraphQLError(e.response.data.error)
+      }
+    },
+    userPosts: async (parent, { id }) => {
+      try {
+        const posts = await axios.get(`${ENDPOINT}/api/users/${id}/posts`)
+        return posts.data
+      } catch(e) {
+        throw new GraphQLError(e.response.data.error)
+      }
+    },
+    followers: async (parent, { id }) => {
+      try {
+        const posts = await axios.get(`${ENDPOINT}/api/users/${id}/followers`)
+        return posts.data
+      } catch(e) {
+        throw new GraphQLError(e.response.data.error)
+      }
+    },
+    searchUser: async (parent, { username }) => {
+      try {
+        const posts = await axios.get(`${ENDPOINT}/api/users/search/${username}`)
+        return posts.data
+      } catch(e) {
+        throw new GraphQLError(e.response.data.error)
+      }
+    },
+    following: async (parent, { id }) => {
+      try {
+        const posts = await axios.get(`${ENDPOINT}/api/users/${id}/following`)
+        return posts.data
+      } catch(e) {
+        throw new GraphQLError(e.response.data.error)
+      }
+    },
     post: async (parent, { id }) => {
       try {
         const post = await axios.get(`${ENDPOINT}/api/posts/${id}`)
@@ -71,6 +111,15 @@ export default {
       try {
         const user = await axios.post(`${ENDPOINT}/api/users/authenticate`, { email, password })
         return user.data
+      } catch(e) {
+        throw new GraphQLError(e.response.data.error)
+      }
+    },
+    removeLike: async (parent, { user_id, post_id }) => {
+      console.log(user_id)
+      try {
+        const user = await axios.delete(`${ENDPOINT}/api/likes/${user_id}/${post_id}`)
+        return { message: user.data }
       } catch(e) {
         throw new GraphQLError(e.response.data.error)
       }

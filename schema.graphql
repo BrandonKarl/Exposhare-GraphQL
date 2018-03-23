@@ -4,7 +4,7 @@ type Post {
   created_at: String!,
   image_url: String!,
   likes: String!,
-  user: User
+  user: User!
 }
 
 type User {
@@ -15,8 +15,9 @@ type User {
   created_at: String!,
   profile_picture: String,
   bio: String!,
-  username: String!
-  feed: [Post]
+  username: String!,
+  followers: String,
+  following: String
 }
 
 type AuthenticatedUser {
@@ -35,8 +36,17 @@ type Follow {
 }
 
 type Query {
-  user(id: Int!): User
-  post(id: Int!): Post
+  user(id: Int!): User,
+  post(id: Int!): Post,
+  userFeed(id: Int!): [Post],
+  userPosts(id: Int!): [Post],
+  followers(id: Int!): [User],
+  following(id: Int!): [User],
+  searchUser(username: String!): [User]
+}
+
+type Message {
+  message: String!
 }
 
 type Mutation {
@@ -44,7 +54,8 @@ type Mutation {
   newLike(user_id: Int!, post_id: Int!): Like,
   newFollow(follower: Int!, followee: Int!): Follow,
   newPost(post_id: Int!): Post,
-  loginUser(email: String!, password: String!): AuthenticatedUser
+  loginUser(email: String!, password: String!): AuthenticatedUser,
+  removeLike(user_id: Int!, post_id: Int!): Message
 }
 
 type Subscription {

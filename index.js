@@ -11,6 +11,7 @@ import { makeExecutableSchema } from 'graphql-tools'
 import { SubscriptionServer } from 'subscriptions-transport-ws'
 import { subscribe, execute } from 'graphql'
 import { importSchema } from 'graphql-import'
+import { apolloUploadExpress } from 'apollo-upload-server'
 
 import resolvers from './resolvers'
 
@@ -27,6 +28,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 app.use('/graphql', 
+  apolloUploadExpress(),
   graphqlExpress({ schema })
 )
 

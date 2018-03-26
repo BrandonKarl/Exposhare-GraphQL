@@ -185,7 +185,7 @@ export default {
       const newPost = await db.query(`
         INSERT INTO posts (content, user_id, image_url)
         VALUES ($1, $2, $3)
-        RETURNING id, user_id, content, image_url, created_at`,
+        RETURNING id, content, image_url, created_at, likes`,
         [content, user_id, `/${user_id}/${time}.png`]
       )
 

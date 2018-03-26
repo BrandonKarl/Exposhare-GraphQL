@@ -190,7 +190,7 @@ export default {
       )
 
       const user = await db.query(
-        'SELECT id, firstname, lastname, email, created_at FROM users WHERE id = $1',
+        'SELECT * FROM users WHERE id = $1',
         [newPost.rows[0].user_id]
       )
 

@@ -135,6 +135,19 @@ export default {
         user: newUser.rows[0],
       }, process.env.JWT)
 
+      await db.query(`
+        INSERT INTO follows (follower, followee)
+        VALUES ($1, $2)`,
+      [newUser.rows[0].id, newUser.rows[0].id]).catch(e => { throw new Error(e.message) })
+
+      await db.query(`
+        UPDATE users SET followers = followers + 1 WHERE id = $1`,
+      [newUser.rows[0].id]).catch(e => { throw new Error(e.message) })
+
+      await db.query(`
+        UPDATE users SET following = following + 1 WHERE id = $1`,
+      [newUser.rows[0].id]).catch(e => { throw new Error(e.message) })
+
       return {
         user: newUser.rows[0],
         token
@@ -191,7 +204,7 @@ export default {
 
       const user = await db.query(
         'SELECT * FROM users WHERE id = $1',
-        [newPost.rows[0].user_id]
+        [user_id]
       )
 
       return {

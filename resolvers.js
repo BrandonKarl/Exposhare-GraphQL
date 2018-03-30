@@ -11,6 +11,8 @@ import aws from 'aws-sdk'
 import moment from 'moment'
 import db from './database/connection'
 
+import { formatFeed } from './helper/formatFeed'
+
 const s3 = new aws.S3({
   accessKeyId: process.env.AWS_KEY,
   secretAccessKey: process.env.AWS_SECRET
@@ -30,54 +32,49 @@ const handleErrors = fn =>
 export default {
   Upload: GraphQLUpload,
   Query: {
-    user: handleErrors(async (parent, { id }) => {
+    user: handleErrors(async (parent, { id, context_id }) => {
       const user = await db.query(`
         SELECT id, firstname, lastname, email, created_at, bio, username, profile_picture, followers, following
         FROM users
         WHERE id = $1`,
       [id]).catch(e => { throw new Error(e.message) })
+
+      const follow = await db.query(`
+        SELECT * FROM follows WHERE follower = $1 AND followee = $2`,
+      [context_id, id])
+
+      return { ...user.rows[0], is_following: follow.rows.length }
       return user.rows[0]
     }),
     userFeed: handleErrors(async (parent, { id }) => {
       const feed = await db.query(`
         SELECT firstname, lastname, followers, following, users.email, users.created_at AS user_created_at, users.id AS user_id,
-          posts.created_at, image_url, posts.id, content, likes
+          posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked
         FROM follows 
         JOIN posts ON posts.user_id = followee
+        LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = $1
         JOIN users ON users.id = posts.user_id
         WHERE follower = $1
         ORDER BY posts.id DESC`,
       [id]).catch(e => { throw new Error(e.message) })
 
-      const formattedFeed = feed.rows.map(post => {
-        return {
-          id: post.id,
-          content: post.content,
-          likes: post.likes,
-          created_at: post.created_at,
-          image_url: post.image_url,
-          user: {
-            firstname: post.firstname,
-            lastname: post.lastname,
-            email: post.email,
-            id: post.user_id,
-            created_at: post.user_created_at,
-            followers: post.followers,
-            following: post.following
-          }
-        }
-      })
+      const formattedFeed = formatFeed(feed)
 
       return formattedFeed
     }),
-    userPosts: handleErrors(async (parent, { id }) => {
+    userPosts: handleErrors(async (parent, { id, context_id }) => {
       const feed = await db.query(`
-        SELECT id, content, image_url, likes, user_id, created_at
+        SELECT firstname, lastname, followers, following, email, users.created_at AS user_created_at, users.id AS user_id,
+          posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked
         FROM posts
-        WHERE user_id = $1
+        LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = $2
+        JOIN users ON users.id = posts.user_id
+        WHERE posts.user_id = $1
         ORDER BY id DESC`,
-      [id]).catch(e => { throw new Error(e.message) })
-      return feed.rows
+      [id, context_id]).catch(e => { throw new Error(e.message) })
+
+      const formattedFeed = formatFeed(feed)
+      return formattedFeed
     }),
     followers: async (parent, { id }) => {
       const followers = await db.query(`
@@ -92,7 +89,7 @@ export default {
       const users = await db.query(`
         SELECT id, firstname, lastname, email, created_at, bio, username, profile_picture, followers, following
         FROM users
-        WHERE username LIKE $1`,
+        WHERE LOWER(username) LIKE LOWER($1)`,
       [`%${username}%`]).catch(e => { throw new Error(e.message) })
       return users.rows
     },
@@ -105,12 +102,31 @@ export default {
       [id]).catch(e => { throw new Error(e.message) })
       return following.rows
     },
-    post: async (parent, { id }) => {
+    likedPosts: async (parent, { id }) => {
+      const likedPosts = await db.query(`
+        SELECT firstname, lastname, followers, following, email, users.created_at AS user_created_at, users.id AS user_id,
+          posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked
+        FROM likes
+        JOIN posts ON posts.id = likes.post_id
+        JOIN users on users.id = posts.user_id
+        WHERE likes.user_id = $1`,
+      [id])
+
+      const formattedFeed = formatFeed(likedPosts)
+      return formattedFeed
+    },
+    post: async (parent, { id, context_id }) => {
       const post = await db.query(`
-        SELECT posts.id, content, posts.user_id, created_at, image_url, likes
-        FROM posts WHERE id = $1`,
-      [id]).catch(e => { throw new Error(e.message) })
-      return post.rows[0]
+        SELECT firstname, lastname, followers, following, email, users.created_at AS user_created_at, users.id AS user_id,
+          posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked
+        FROM posts
+        LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = $2
+        JOIN users ON users.id = posts.user_id
+        WHERE posts.id = $1`,
+      [id, context_id]).catch(e => { throw new Error(e.message) })
+
+      const formattedFeed = formatFeed(post)
+      return formattedFeed[0]
     }
   },
   Mutation: {
@@ -184,7 +200,6 @@ export default {
       return follow.rows[0]
     }),
     newPost: handleErrors(async (parent, { file, content, user_id }) => {
-      console.log('okkkkkkkk')
       const time = moment().format().replace(/:/g, '-')
       const { stream, filename, mimetype, encoding } = await file
 
@@ -210,6 +225,26 @@ export default {
       return {
         ...newPost.rows[0], user: user.rows[0]
       }
+    }),
+    updateInfo: handleErrors(async (parent, { id, bio, profile_picture }) => {
+      const { stream, filename, mimetype, encoding } = await profile_picture
+      await s3.upload({
+        Body: stream,
+        Bucket: `gui-project-database/${id}`,
+        Key: `profile_picture.png`,
+        ACL: 'public-read'
+      }).promise()
+
+      await db.query(`
+        UPDATE users SET profile_picture = '/profile_picture', bio = $1 WHERE id = $2`,     
+      [bio, id]).catch(e => { throw new Error(e.message) })
+
+      const updatedUser = await db.query(`
+        SELECT * FROM users WHERE id = $1`,
+      [id])
+
+      return updatedUser.rows[0]
+
     }),
     loginUser: handleErrors(async (parent, { email, password }) => {
       const foundUser = await db.query(`

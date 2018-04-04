@@ -7,52 +7,52 @@ type File {
 }
 
 type Post {
-  id: Int!,
-  content: String!,
-  created_at: String!,
-  image_url: String!,
-  likes: String!,
+  id: Int!
+  content: String!
+  created_at: String!
+  image_url: String!
+  likes: String!
   liked: Boolean
   user: User!
 }
 
 type User {
-  id: Int!,
-  firstname: String!,
-  lastname: String!,
-  email: String!,
-  created_at: String!,
-  profile_picture: String,
-  bio: String!,
-  username: String!,
-  followers: String!,
-  following: String!,
+  id: Int!
+  firstname: String!
+  lastname: String!
+  email: String!
+  created_at: String!
+  profile_picture: String
+  bio: String!
+  username: String!
+  followers: String!
+  following: String!
   is_following: Boolean!
 }
 
 type AuthenticatedUser {
-  user: User,
+  user: User
   token: String!
 }
 
 type Like {
-  user_id: Int!,
+  user_id: Int!
   post_id: Int!
 }
 
 type Follow {
-  follower: Int!,
+  follower: Int!
   followee: Int!
 }
 
 type Query {
-  user(id: Int!, context_id: Int!): User,
-  post(id: Int!, context_id: Int!): Post,
-  userFeed(id: Int!): [Post],
-  userPosts(id: Int!, context_id: Int!): [Post],
-  followers(id: Int!): [User],
-  following(id: Int!): [User],
-  searchUser(username: String!): [User],
+  user(username: String!, context_id: Int!): User
+  post(id: Int!, context_id: Int!): Post
+  userFeed(id: Int!, after: Int): [Post]
+  userPosts(id: Int!, context_id: Int!, after: Int): [Post]
+  followers(id: Int!): [User]
+  following(id: Int!): [User]
+  searchUser(username: String!): [User]
   likedPosts(id: Int!): [Post]
 }
 
@@ -61,14 +61,15 @@ type Message {
 }
 
 type Mutation {
-  newUser(firstname: String!, lastname: String!, email: String!, password: String!, bio: String!, username: String!): AuthenticatedUser,
-  newLike(user_id: Int!, post_id: Int!): Like,
-  newFollow(follower: Int!, followee: Int!): Follow,
-  newPost(file: Upload!, content: String!, user_id: Int!): Post,
-  loginUser(email: String!, password: String!): AuthenticatedUser,
-  removeLike(user_id: Int!, post_id: Int!): Message,
-  removeFollow(follower: Int!, followee: Int!): Message,
+  newUser(firstname: String!, lastname: String!, email: String!, password: String!, bio: String!, username: String!): AuthenticatedUser
+  newLike(user_id: Int!, post_id: Int!): Like
+  newFollow(follower: Int!, followee: Int!): Follow
+  newPost(file: Upload!, content: String!, user_id: Int!): Post
+  loginUser(email: String!, password: String!): AuthenticatedUser
+  removeLike(user_id: Int!, post_id: Int!): Message
+  removeFollow(follower: Int!, followee: Int!): Message
   updateInfo(id: Int!, bio: String!, profile_picture: Upload!): User!
+  deletePost(post_id: Int!): Message
 }
 
 type Subscription {

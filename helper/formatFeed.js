@@ -1,4 +1,5 @@
 export const formatFeed = (feed) => {
+  console.log(feed.rows)
   return feed.rows.map(post => {
     return {
       id: post.id,

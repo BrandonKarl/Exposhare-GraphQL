@@ -19,7 +19,7 @@ export const getUserByUsername = async (username) => {
 export const getUserPosts = async (id, context_id, after) => {
   if(after) {
     return await db.query(`
-      SELECT firstname, lastname, followers, following, email, users.created_at AS user_created_at, users.id AS user_id,
+      SELECT firstname, lastname, followers, following, email, users.created_at AS user_created_at, users.id AS user_id, users.username
         posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked
       FROM posts
       LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = $2
@@ -31,7 +31,7 @@ export const getUserPosts = async (id, context_id, after) => {
   }
   else {
     return await db.query(`
-      SELECT firstname, lastname, followers, following, email, users.created_at AS user_created_at, users.id AS user_id,
+      SELECT firstname, lastname, followers, following, email, users.created_at AS user_created_at, users.id AS user_id, users.username
         posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked
       FROM posts
       LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = $2

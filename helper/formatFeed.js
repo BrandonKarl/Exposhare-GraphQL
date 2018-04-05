@@ -15,7 +15,8 @@ export const formatFeed = (feed) => {
         id: post.user_id,
         created_at: post.user_created_at,
         followers: post.followers,
-        following: post.following
+        following: post.following,
+        username: post.username
       }
     }
   })

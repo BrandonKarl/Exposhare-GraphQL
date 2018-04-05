@@ -123,6 +123,10 @@ export default {
       const newPost = await insertPost(content, user_id, time)
       const user = await getUser(user_id)
 
+      socket.publish('NEW_POST', {
+        ...newPost, user
+      })
+
       return {
         ...newPost, user
       }

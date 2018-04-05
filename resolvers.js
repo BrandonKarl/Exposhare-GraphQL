@@ -124,7 +124,7 @@ export default {
       const user = await getUser(user_id)
 
       socket.publish('NEW_POST', {
-        ...newPost, user
+         newPost: { ...newPost, user }
       })
 
       return {
@@ -193,7 +193,7 @@ export default {
             SELECT * FROM follows WHERE follower = $1`,
           [args.feed_id])
           followees.rows.map(followee => {
-            if (followee.followee === payload.newPost.user_id) {
+            if (followee.followee === payload.newPost.user.id) {
               found = true
             }
           })

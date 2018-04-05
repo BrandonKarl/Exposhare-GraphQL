@@ -94,7 +94,7 @@ export default {
       await insertFollow(user.id, user.id)
 
       return {
-        user:
+        user,
         token
       }
     }),

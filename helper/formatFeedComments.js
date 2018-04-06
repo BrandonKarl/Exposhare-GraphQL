@@ -55,7 +55,8 @@ export const formatFeedComments = (feed) => {
           firstname: feed.rows[i].cmt_firstname,
           lastname: feed.rows[i].cmt_lastname,
           username: feed.rows[i].cmt_username,
-          comment: feed.rows[i].comment
+          comment: feed.rows[i].comment,
+          profile_picture: feed.rows[0].cmt_profile
         }],
         user: {
           firstname: feed.rows[i].firstname,

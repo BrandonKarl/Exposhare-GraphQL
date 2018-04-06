@@ -28,7 +28,8 @@ export const formatFeedComments = (feed) => {
       created_at: feed.rows[0].user_created_at,
       followers: feed.rows[0].followers,
       following: feed.rows[0].following,
-      username: feed.rows[0].username
+      username: feed.rows[0].username,
+      profile_picture: feed.rows[0].profile_picture
     }
   })
   for(let i = 1; i < feed.rows.length; i++) {
@@ -64,7 +65,8 @@ export const formatFeedComments = (feed) => {
           created_at: feed.rows[i].user_created_at,
           followers: feed.rows[i].followers,
           following: feed.rows[i].following,
-          username: feed.rows[i].username
+          username: feed.rows[i].username,
+          profile_picture: feed.rows[i].profile_picture
         }
       })
     }

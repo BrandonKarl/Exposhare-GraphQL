@@ -6,6 +6,20 @@ type File {
   encoding: String!
 }
 
+type PostComment {
+  firstname: String!
+  lastname: String!
+  username: String!
+  comment: String!
+  profile_picture: String!
+}
+
+type Comment {
+  user_id: Int!
+  post_id: Int!
+  comment: String!
+}
+
 type Post {
   id: Int!
   content: String!
@@ -14,6 +28,7 @@ type Post {
   likes: String!
   liked: Boolean
   user: User!
+  comments: [PostComment]
 }
 
 type User {
@@ -54,6 +69,7 @@ type Query {
   following(id: Int!): [User]
   searchUser(username: String!): [User]
   likedPosts(id: Int!): [Post]
+  trending: [Post]
 }
 
 type Message {
@@ -70,6 +86,7 @@ type Mutation {
   removeFollow(follower: Int!, followee: Int!): Message
   updateInfo(id: Int!, bio: String!, profile_picture: Upload!): User!
   deletePost(post_id: Int!): Message
+  newComment(user_id: Int!, post_id: Int!, comment: String!): Comment!
 }
 
 type Subscription {

@@ -12,18 +12,20 @@ import moment from 'moment'
 import db from './database/connection'
 
 import { formatFeed } from './helper/formatFeed'
+import { formatFeedComments } from './helper/formatFeedComments'
 
 import { getUser, getUserFeed, getUserPosts, 
         getUserFollowers, searchUser, checkUserExists, getUserByUsername } from './db_actions/query/user'
 import { isFollowing, getFollowers, getFollowing } from './db_actions/query/follows'
 import { getLikedPosts } from './db_actions/query/likes'
-import { getPost } from './db_actions/query/posts';
+import { getPost, getTrending } from './db_actions/query/posts';
 
 import { insertUser, updateInfo } from './db_actions/mutate/user' 
 import { insertFollow, incrementFollowers, incrementFollowing, 
         deleteFollow, decrementFollowers, decrementFollowing } from './db_actions/mutate/follows' 
 import { insertLike, incrementLikes, deleteLike, decrementLikes } from './db_actions/mutate/likes'
 import { insertPost, deletePost } from './db_actions/mutate/posts'
+import { insertComment } from './db_actions/mutate/comments';
 
 const s3 = new aws.S3({
   accessKeyId: process.env.AWS_KEY,
@@ -54,11 +56,11 @@ export default {
     }),
     userFeed: handleErrors(async (parent, { id, after }) => {
       const feed = await getUserFeed(id, after)
-      return formatFeed(feed)
+      return formatFeedComments(feed)
     }),
     userPosts: handleErrors(async (parent, { id, context_id, after }) => {
       const posts = await getUserPosts(id, context_id, after)
-      return formatFeed(posts)
+      return formatFeedComments(posts)
     }),
     followers: handleErrors(async (parent, { id }) => {
       return await getFollowers(id)
@@ -78,7 +80,11 @@ export default {
       if(!post.rows.length) {
         throw new Error('Post does not exist')
       }
-      return formatFeed(post)[0]
+      return formatFeedComments(post)[0]
+    }),
+    trending: handleErrors(async (parent, {}) => {
+      const trending = await getTrending()
+      return formatFeedComments(trending)
     })
   },
   Mutation: {
@@ -108,6 +114,9 @@ export default {
       await incrementFollowers(followee)
       await incrementFollowing(follower)
       return follow
+    }),
+    newComment: handleErrors(async (parent, { user_id, post_id, comment }) => {
+      return await insertComment(user_id, post_id, comment)
     }),
     newPost: handleErrors(async (parent, { file, content, user_id }) => {
       const time = moment().format().replace(/:|\+/g, '-')

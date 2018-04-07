@@ -11,7 +11,7 @@ type PostComment {
   lastname: String!
   username: String!
   comment: String!
-  profile_picture: String!
+  profile_picture: String
 }
 
 type Comment {

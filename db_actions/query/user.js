@@ -1,6 +1,17 @@
 import db from '../../database/connection'
 import { formatFeedComments } from '../../helper/formatFeedComments'
 
+function generateString(arr) {
+  var s = ''
+  var count = 2
+  arr.map(e => {
+    s = s + `$${count},`
+    count = count + 1
+  })
+  s = s.slice(0, -1)
+  return s
+}
+
 export const getUser = async (id) => {
   return (await db.query(`
     SELECT id, firstname, lastname, email, created_at, bio, username, profile_picture, followers, following
@@ -33,7 +44,7 @@ export const getUserPosts = async (id, context_id, after) => {
       LEFT JOIN comments ON comments.post_id = posts.id
       JOIN users u1 ON u1.id = posts.user_id
       LEFT JOIN users u2 ON u2.id = comments.user_id
-      WHERE posts.id IN ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      WHERE posts.id IN (${generateString(id_arr)})
       ORDER BY posts.id DESC`,
     [context_id, ...id_arr])
   }
@@ -42,6 +53,7 @@ export const getUserPosts = async (id, context_id, after) => {
     SELECT id FROM posts WHERE posts.user_id = $1 ORDER BY posts.id DESC LIMIT 15`, [id])
 
     const id_arr = ids.rows.map(id => id.id)
+    console.log(generateString(id_arr))
 
     return await db.query(`
       SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
@@ -52,7 +64,7 @@ export const getUserPosts = async (id, context_id, after) => {
       LEFT JOIN comments ON comments.post_id = posts.id
       JOIN users u1 ON u1.id = posts.user_id
       LEFT JOIN users u2 ON u2.id = comments.user_id
-      WHERE posts.id IN ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      WHERE posts.id IN (${generateString(id_arr)})
       ORDER BY posts.id DESC`,
     [context_id, ...id_arr]) 
   }
@@ -83,7 +95,7 @@ export const getUserFeed = async (id, after) => {
       LEFT JOIN comments ON comments.post_id = posts.id
       JOIN users u1 ON u1.id = posts.user_id
       LEFT JOIN users u2 ON u2.id = comments.user_id
-      WHERE posts.id IN ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      WHERE posts.id IN (${generateString(id_arr)})
       ORDER BY posts.id DESC`,
     [id, ...id_arr])
   }
@@ -103,7 +115,7 @@ export const getUserFeed = async (id, after) => {
       LEFT JOIN comments ON comments.post_id = posts.id
       JOIN users u1 ON u1.id = posts.user_id
       LEFT JOIN users u2 ON u2.id = comments.user_id
-      WHERE posts.id IN ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      WHERE posts.id IN (${generateString(id_arr)})
       ORDER BY posts.id DESC`,
     [id, ...id_arr])
   }

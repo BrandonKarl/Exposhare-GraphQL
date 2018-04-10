@@ -36,7 +36,7 @@ export const getUserPosts = async (id, context_id, after) => {
     const id_arr = ids.rows.map(id => id.id)
 
     return await db.query(`
-      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
+      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.profile_picture, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
         u2.firstname AS cmt_firstname, u2.lastname AS cmt_lastname, u2.id AS cmt_user_id, u2.username AS cmt_username, u2.profile_picture as cmt_profile,
         posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked, comments.comment
       FROM posts
@@ -56,7 +56,7 @@ export const getUserPosts = async (id, context_id, after) => {
     console.log(generateString(id_arr))
 
     return await db.query(`
-      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
+      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.profile_picture, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
         u2.firstname AS cmt_firstname, u2.lastname AS cmt_lastname, u2.id AS cmt_user_id, u2.username AS cmt_username, u2.profile_picture as cmt_profile,
         posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked, comments.comment
       FROM posts
@@ -87,7 +87,7 @@ export const getUserFeed = async (id, after) => {
     const id_arr = ids.rows.map(id => id.id)
 
     return await db.query(`
-      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
+      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.profile_picture, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
         u2.firstname AS cmt_firstname, u2.lastname AS cmt_lastname, u2.id AS cmt_user_id, u2.username AS cmt_username, u2.profile_picture as cmt_profile,
         posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked, comments.comment
       FROM posts
@@ -107,7 +107,7 @@ export const getUserFeed = async (id, after) => {
     const id_arr = ids.rows.map(id => id.id)
 
     return await db.query(`
-      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
+      SELECT u1.firstname, u1.lastname, u1.followers, u1.following, u1.profile_picture, u1.email, u1.created_at AS user_created_at, u1.id AS user_id, u1.username,
         u2.firstname AS cmt_firstname, u2.lastname AS cmt_lastname, u2.id AS cmt_user_id, u2.username AS cmt_username, u2.profile_picture as cmt_profile,
         posts.created_at, image_url, posts.id, content, likes, likes.user_id AS liked, comments.comment
       FROM posts

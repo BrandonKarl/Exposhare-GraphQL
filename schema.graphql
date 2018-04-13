@@ -60,6 +60,26 @@ type Follow {
   followee: Int!
 }
 
+type Conversation_Message {
+  user_id: Int!
+  profile_picture: String
+  firstname: String!
+  lastname: String!
+  message: String!
+  conversation_id: Int!
+}
+
+type Conversation {
+  user1: Int!
+  user2: Int!
+  id: Int!
+  messages: [Conversation_Message]
+}
+
+type Message {
+  message: String!
+}
+
 type Query {
   user(username: String!, context_id: Int!): User
   post(id: Int!, context_id: Int!): Post
@@ -70,10 +90,7 @@ type Query {
   searchUser(username: String!): [User]
   likedPosts(id: Int!): [Post]
   trending: [Post]
-}
-
-type Message {
-  message: String!
+  userConversations(user_id: Int!): [Conversation]
 }
 
 type Mutation {
@@ -87,8 +104,11 @@ type Mutation {
   updateInfo(id: Int!, bio: String!, profile_picture: Upload!): User!
   deletePost(post_id: Int!): Message
   newComment(user_id: Int!, post_id: Int!, comment: String!): Comment!
+  newConversation(user1: Int!, user2: Int!): Conversation!
+  newMessage(user_id: Int!, message: String!, conversation_id: Int!): Conversation_Message
 }
 
 type Subscription {
   newPost(feed_id: Int!): Post
+  newMessage(user_id: Int!): Conversation_Message
 }

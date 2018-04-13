@@ -13,6 +13,7 @@ import db from './database/connection'
 
 import { formatFeed } from './helper/formatFeed'
 import { formatFeedComments } from './helper/formatFeedComments'
+import { formatConversation } from './helper/formatConversation'
 
 import { getUser, getUserFeed, getUserPosts, 
         getUserFollowers, searchUser, checkUserExists, getUserByUsername } from './db_actions/query/user'
@@ -85,6 +86,18 @@ export default {
     trending: handleErrors(async (parent, {}) => {
       const trending = await getTrending()
       return formatFeedComments(trending)
+    }),
+    userConversations: handleErrors(async (parent, { user_id }) => {
+      const conversations = await db.query(`
+        SELECT user1, user2, conversations.id, message, messages.user_id, users.firstname, users.lastname, users.id as user_id, users.profile_picture
+        FROM conversations
+        JOIN messages ON messages.conversation_id = conversations.id
+        JOIN users ON users.id = messages.user_id
+        WHERE user1 = $1 OR user2 = $1
+        ORDER BY conversations.id DESC`,
+      [user_id])
+
+      return formatConversation(conversations)
     })
   },
   Mutation: {
@@ -190,6 +203,33 @@ export default {
       await deleteLike(user_id, post_id)
       await decrementLikes(post_id)
       return { message: 'removed like' }
+    }),
+    newConversation: handleErrors(async (parent, { user1, user2 }) => {
+      const conversation = await db.query(`
+        INSERT INTO conversations (user1, user2) VALUES ($1, $2)
+        RETURNING user1, user2, id`,
+      [user1, user2])
+
+      return conversation.rows[0]
+    }),
+    newMessage: handleErrors(async (parent, { user_id, message, conversation_id }) => {
+      const message_id = (await db.query(`
+        INSERT INTO messages (user_id, message, conversation_id)
+        VALUES ($1, $2, $3) RETURNING id`,
+      [user_id, message, conversation_id])).rows[0].id
+
+      const newMessage = await db.query(`
+        SELECT messages.user_id, messages.message, messages.conversation_id, users.profile_picture, users.firstname, users.lastname 
+        FROM messages
+        JOIN users ON users.id = messages.user_id
+        WHERE messages.id = $1`,
+      [message_id])
+
+      socket.publish('NEW_MESSAGE', {
+        newMessage: { ...newMessage.rows[0] }
+      })
+
+      return newMessage.rows[0]
     })
   },
   Subscription: {
@@ -207,6 +247,24 @@ export default {
             }
           })
 
+          return found
+        }
+      )
+    },
+    newMessage: {
+      subscribe: withFilter(
+        () => socket.asyncIterator('NEW_MESSAGE'),
+        async (payload, args) => {
+          var found = false
+          const conversations = await db.query(`
+            SELECT * FROM conversations WHERE user1 = $1 OR user2 = $1`,
+          [args.user_id])
+          conversations.rows.map(conversation => {
+            if(conversation.id === payload.newMessage.conversation_id) {
+              found = true
+            }
+          })
+          
           return found
         }
       )

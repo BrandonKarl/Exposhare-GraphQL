@@ -12,12 +12,14 @@ export const formatConversation = (conversations) => {
       lastname: conversations.rows[0].uo_last,
       username: conversations.rows[0].uo_user,
       id: conversations.rows[0].uo_id,
+      profile_picture: conversations.rows[0].uo_p
     },
     user2: {
       firstname: conversations.rows[0].ut_first,
       lastname: conversations.rows[0].ut_last,
       username: conversations.rows[0].ut_user,
       id: conversations.rows[0].ut_id,
+      profile_picture: conversations.rows[0].ut_p
     },
     id: conversations.rows[0].id,
     messages: [{
@@ -50,12 +52,14 @@ export const formatConversation = (conversations) => {
           lastname: conversations.rows[i].uo_last,
           username: conversations.rows[i].uo_user,
           id: conversations.rows[i].uo_id,
+          profile_picture: conversations.rows[i].uo_p
         },
         user2: {
           firstname: conversations.rows[i].ut_first,
           lastname: conversations.rows[i].ut_last,
           username: conversations.rows[i].ut_user,
           id: conversations.rows[i].ut_id,
+          profile_picture: conversations.rows[i].ut_p
         },
         id: conversations.rows[i].id,
         messages: [{

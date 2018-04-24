@@ -102,11 +102,11 @@ type Query {
 
 type Mutation {
   newUser(firstname: String!, lastname: String!, email: String!, password: String!, bio: String!, username: String!): AuthenticatedUser
-  newLike(user_id: Int!, post_id: Int!): Like
+  newLike(user_id: Int!, post_id: Int!): Post
   newFollow(follower: Int!, followee: Int!): Follow
   newPost(file: Upload!, content: String!, user_id: Int!): Post
   loginUser(email: String!, password: String!): AuthenticatedUser
-  removeLike(user_id: Int!, post_id: Int!): Message
+  removeLike(user_id: Int!, post_id: Int!): Post
   removeFollow(follower: Int!, followee: Int!): Message
   updateInfo(id: Int!, bio: String!, profile_picture: Upload!): User!
   deletePost(post_id: Int!): Message

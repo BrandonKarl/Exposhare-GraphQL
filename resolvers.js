@@ -99,7 +99,7 @@ export default {
         JOIN users u2 ON u2.id = user1
         JOIN users u3 ON u3.id = user2
         WHERE user1 = $1 OR user2 = $1
-        ORDER BY conversations.id DESC`,
+        ORDER BY conversations.id DESC, messages.id`,
       [user_id])
 
       return formatConversation(conversations)

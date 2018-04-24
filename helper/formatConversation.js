@@ -7,8 +7,18 @@ export const formatConversation = (conversations) => {
   let currentIndex = 0
   let currentId = conversations.rows[0].id
   conArr.push({
-    user1: conversations.rows[0].user1,
-    user2: conversations.rows[0].user2,
+    user1: {
+      firstname: conversations.rows[0].uo_first,
+      lastname: conversations.rows[0].uo_last,
+      username: conversations.rows[0].uo_user,
+      id: conversations.rows[0].uo_id,
+    },
+    user2: {
+      firstname: conversations.rows[0].ut_first,
+      lastname: conversations.rows[0].ut_last,
+      username: conversations.rows[0].ut_user,
+      id: conversations.rows[0].ut_id,
+    },
     id: conversations.rows[0].id,
     messages: [{
       user_id: conversations.rows[0].user_id,
@@ -35,8 +45,18 @@ export const formatConversation = (conversations) => {
       currentId = conversations.rows[i].id
       currentIndex++
       conArr.push({
-        user1: conversations.rows[i].user1,
-        user2: conversations.rows[i].user2,
+        user1: {
+          firstname: conversations.rows[i].uo_first,
+          lastname: conversations.rows[i].uo_last,
+          username: conversations.rows[i].uo_user,
+          id: conversations.rows[i].uo_id,
+        },
+        user2: {
+          firstname: conversations.rows[i].ut_first,
+          lastname: conversations.rows[i].ut_last,
+          username: conversations.rows[i].ut_user,
+          id: conversations.rows[i].ut_id,
+        },
         id: conversations.rows[i].id,
         messages: [{
           user_id: conversations.rows[i].user_id,

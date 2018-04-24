@@ -76,6 +76,13 @@ type Conversation {
   messages: [Conversation_Message]
 }
 
+type Conversation2 {
+  user1: User!
+  user2: User!
+  id: Int!
+  messages: [Conversation_Message]
+}
+
 type Message {
   message: String!
 }
@@ -90,7 +97,7 @@ type Query {
   searchUser(username: String!): [User]
   likedPosts(id: Int!): [Post]
   trending: [Post]
-  userConversations(user_id: Int!): [Conversation]
+  userConversations(user_id: Int!): [Conversation2]
 }
 
 type Mutation {

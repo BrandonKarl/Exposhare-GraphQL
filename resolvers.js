@@ -89,10 +89,15 @@ export default {
     }),
     userConversations: handleErrors(async (parent, { user_id }) => {
       const conversations = await db.query(`
-        SELECT user1, user2, conversations.id, message, messages.user_id, users.firstname, users.lastname, users.id as user_id, users.profile_picture
+        SELECT user1, user2, conversations.id, message, messages.user_id, 
+        u1.firstname, u1.lastname, u1.id as user_id, u1.profile_picture,
+        u2.firstname AS uo_first, u2.lastname AS uo_last, u2.username AS uo_user, u2.id AS uo_id,
+        u3.firstname AS ut_first, u3.lastname AS ut_last, u3.username AS ut_user, u3.id AS ut_id
         FROM conversations
         JOIN messages ON messages.conversation_id = conversations.id
-        JOIN users ON users.id = messages.user_id
+        JOIN users u1 ON u1.id = messages.user_id
+        JOIN users u2 ON u2.id = user1
+        JOIN users u3 ON u3.id = user2
         WHERE user1 = $1 OR user2 = $1
         ORDER BY conversations.id DESC`,
       [user_id])

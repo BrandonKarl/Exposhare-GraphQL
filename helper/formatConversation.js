@@ -3,6 +3,8 @@ export const formatConversation = (conversations) => {
     return []
   }
 
+  console.log(conversations.rows)
+
   let conArr = []
   let currentIndex = 0
   let currentId = conversations.rows[0].id
@@ -35,12 +37,12 @@ export const formatConversation = (conversations) => {
   for(let i = 1; i < conversations.rows.length; i++) {
     if(conversations.rows[i].id === currentId) {
       conArr[currentIndex].messages.push({
-        user_id: conversations.rows[0].user_id,
-        profile_picture: conversations.rows[0].profile_picture,
-        firstname: conversations.rows[0].firstname,
-        lastname: conversations.rows[0].lastname,
-        message: conversations.rows[0].message,
-        conversation_id: conversations.rows[0].id
+        user_id: conversations.rows[i].user_id,
+        profile_picture: conversations.rows[i].profile_picture,
+        firstname: conversations.rows[i].firstname,
+        lastname: conversations.rows[i].lastname,
+        message: conversations.rows[i].message,
+        conversation_id: conversations.rows[i].id
       })
     }
     else {

@@ -212,10 +212,16 @@ export default {
       return post.rows[0]
     }),
     newConversation: handleErrors(async (parent, { user1, user2 }) => {
-      const conversation = await db.query(`
+      try {
+        var conversation = await db.query(`
         INSERT INTO conversations (user1, user2) VALUES ($1, $2)
         RETURNING user1, user2, id`,
-      [user1, user2])
+        [user1, user2])
+      } catch(e) {
+        var conversation = await db.query(`
+        SELECT id FROM conversations WHERE user1 IN ($1, $2) AND user2 IN ($1, $2)`,
+        [user1, user2])
+      }
 
       return conversation.rows[0]
     }),
